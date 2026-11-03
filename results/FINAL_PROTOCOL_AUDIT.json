@@ -1,0 +1,97 @@
+{
+  "status": "PASS",
+  "execution_scope": "final frozen test",
+  "exercise": "E2 exclusively",
+  "subjects": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "classes": [
+    0,
+    1,
+    5,
+    6
+  ],
+  "train_repetitions": [
+    1,
+    3,
+    4
+  ],
+  "test_repetitions": [
+    2,
+    5
+  ],
+  "rep6_used": false,
+  "window_samples": 40,
+  "step_samples": 20,
+  "sampling_hz": 200,
+  "channel_sets_one_based": {
+    "1": [
+      1
+    ],
+    "2": [
+      1,
+      5
+    ],
+    "4": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "8": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "threshold_rule": "mean(train-rest RMS)+3*std(train-rest RMS), per subject/channel; training only",
+  "baseline_template_rule": "strict majority within each training repetition; exact 50/50=>0; final strict majority across reps 1,3,4",
+  "baseline_classifier": "minimum Hamming; tie for minimum=>reject (-1)",
+  "lda_rms_features": [
+    "RMS"
+  ],
+  "lda_td_features": [
+    "RMS",
+    "MAV",
+    "WL"
+  ],
+  "zscore_fit": "training repetitions 1,3,4 only",
+  "lda_priors": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+  ],
+  "shrinkage_used": false,
+  "subsampling_used": false,
+  "sigma_guards_total": 0,
+  "numeric_instability_detected": false,
+  "assertions": {
+    "all_files_e2": true,
+    "selected_classes_only_0_1_5_6": true,
+    "train_only_1_3_4": true,
+    "test_only_2_5": true,
+    "rep6_excluded": true,
+    "no_window_crosses_class_or_repetition": true,
+    "zscore_train_only": true,
+    "thresholds_train_rest_only": true,
+    "same_windows_and_channels_all_methods": true,
+    "no_post_test_tuning": true,
+    "lda_priors_exact_0_25_each": true,
+    "baseline_50_50_tie_bit_zero": true
+  }
+}
