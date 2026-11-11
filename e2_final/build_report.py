@@ -1,9 +1,16 @@
 from pathlib import Path
 import pandas as pd, numpy as np, json
 import matplotlib.pyplot as plt
+import argparse
 
-base=Path('/mnt/data/e2_final/results')
-out=Path('/mnt/data/e2_final')
+# Ajuste de portabilidade da Etapa 4 (sem alterar cálculos ou dados).
+parser = argparse.ArgumentParser(description='Reconstrói os gráficos e o relatório a partir dos CSV/JSON já gerados.')
+parser.add_argument('--results', type=Path, default=Path(__file__).resolve().parent / 'results')
+parser.add_argument('--out', type=Path, default=Path(__file__).resolve().parent)
+args = parser.parse_args()
+base = args.results
+out = args.out
+out.mkdir(parents=True, exist_ok=True)
 d=pd.read_csv(base/'final_results_by_subject.csv')
 s=pd.read_csv(base/'final_summary_mean_std.csv')
 p=pd.read_csv(base/'macro_f1_primary_comparison.csv')
