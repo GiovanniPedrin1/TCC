@@ -1,0 +1,39 @@
+name: Testes e integridade
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    name: Testes Python e manifesto SHA-256
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Preparar Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: .python-version
+          cache: pip
+
+      - name: Instalar dependências fixadas
+        run: python -m pip install -r requirements.txt
+
+      - name: Conferir ambiente
+        run: python verificar_ambiente.py
+
+      - name: Verificar integridade dos arquivos
+        run: python verificar_integridade.py
+
+      - name: Executar testes de regressão
+        run: python -W error -m unittest discover -s tests -v

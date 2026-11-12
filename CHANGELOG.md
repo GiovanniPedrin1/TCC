@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## V2.3 — 12/11/2026 — Citação e integração contínua
+
+- Adicionado `CITATION.cff` para citação do repositório de software no GitHub, sem inventar DOI para o TCC.
+- Adicionado `.github/workflows/ci.yml` com Python 3.13.5, dependências fixadas, conferência do ambiente, manifesto SHA-256 e cinco testes unitários, sem dados brutos NinaPro.
+- Atualizado `README.md` para o estado público do repositório, a citação e as verificações automáticas.
+- Regenerado `docs/MANIFESTO_SHA256.csv` para os arquivos da V2.3.
+- Nenhuma alteração nos classificadores, protocolo experimental ou resultados científicos preservados.
+
 ## V2.2 — 12/11/2026 — Encerramento da checklist interna
 
 - Removido `docs/ANTES_DE_PUBLICAR.md` por se tratar de checklist interna já superada pela auditoria do bundle.
