@@ -1,6 +1,6 @@
 # TCC — sEMG, número de canais e classificação de gestos (NinaPro DB5)
 
-**Versão do repositório: V2 — revisão de legibilidade e reprodutibilidade (11/11/2026).**
+**Versão do repositório: V2.1 — V2 reproduzida, com licença 0BSD e auditoria preliminar de publicação (12/11/2026).**
 
 Código, resultados congelados e evidências de auditoria do trabalho **“Avaliação da influência do número de canais de sEMG na classificação de gestos por limiar e aprendizado de máquina”**.
 
@@ -79,5 +79,5 @@ As métricas resumem **dez participantes**, sem misturar janelas de diferentes p
 - A V2 foi reexecutada com dados locais fornecidos pelo autor, **não** com uma cópia da NinaPro autenticada externamente. Não compartilhe o banco bruto em commits, ZIPs ou releases.
 - O manifesto `docs/MANIFESTO_SHA256.csv` documenta os arquivos incluídos no pacote V2; não é o manifesto histórico original (que pertencia à V1).
 - `comparison/` conserva a consolidação histórica; o código de reprodução integral dessa etapa ainda não está disponível.
-- Não foi definida uma licença de reutilização para o código autoral. **A ausência de `LICENSE` não é autorização de uso irrestrito.** Verifique os direitos de terceiros antes da publicação.
-- Revise [docs/ANTES_DE_PUBLICAR.md](docs/ANTES_DE_PUBLICAR.md). O pacote não foi publicado no GitHub por esta revisão.
+- O código-fonte autoral é distribuído sob a **licença Zero-Clause BSD (0BSD)**. Consulte [`LICENSE`](LICENSE). Ela permite uso, cópia, alteração e redistribuição, inclusive comercial, sem obrigatoriedade de atribuição. Isso **não licencia** os dados da NinaPro nem materiais de terceiros, que continuam sujeitos às respectivas condições de uso.
+- Revise [docs/ANTES_DE_PUBLICAR.md](docs/ANTES_DE_PUBLICAR.md) e [docs/HISTORICO_E_PRIVACIDADE.md](docs/HISTORICO_E_PRIVACIDADE.md). **A verificação dos objetos Git históricos ainda depende de um bundle/clonagem integral.** O pacote não foi publicado no GitHub por esta revisão.

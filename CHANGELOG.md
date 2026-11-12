@@ -1,3 +1,14 @@
+# Histórico de alterações
+
+## V2.1 — 12/11/2026 — Preparação para publicação
+
+- Adicionada a licença permissiva Zero-Clause BSD (0BSD) para o código autoral.
+- Documentado o alcance e os limites da conferência do histórico fornecido (`git log --stat`).
+- Atualizados README, checklist de publicação e manifesto SHA-256.
+- Nenhum experimento, parâmetro, resultado científico ou código de classificação foi alterado nesta atualização.
+
+---
+
 # Histórico de versões do repositório
 
 ## V2 — 2026-11-11
