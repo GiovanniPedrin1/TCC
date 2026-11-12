@@ -1,6 +1,6 @@
 # TCC — sEMG, número de canais e classificação de gestos (NinaPro DB5)
 
-**Versão do repositório: V2.2 — protocolo reproduzido, licença 0BSD e auditoria do histórico Git concluída para o bundle fornecido (12/11/2026).**
+**Versão do repositório: V2.3 — protocolo reproduzido, licença 0BSD, auditoria do histórico Git concluída e verificações automáticas (12/11/2026).**
 
 Código, resultados congelados e evidências de auditoria do trabalho **“Avaliação da influência do número de canais de sEMG na classificação de gestos por limiar e aprendizado de máquina”**.
 
@@ -21,6 +21,8 @@ Código, resultados congelados e evidências de auditoria do trabalho **“Avali
 | `verificar_reproducao.py` | Compara saídas novas com as saídas científicas preservadas |
 | `verificar_integridade.py` | Verifica os arquivos do repositório pelo manifesto SHA-256 |
 | `tests/` | Testes automatizados das métricas em presença de rejeição |
+| `.github/workflows/ci.yml` | Executa testes e verifica ambiente e integridade no GitHub Actions |
+| `CITATION.cff` | Metadados para citar o código por meio do GitHub |
 | `analises/bootstrap/` | Reamostragem exploratória posterior ao teste final |
 | `analises/exploracao_threshold/` | Exploração auxiliar A–D anterior à seleção metodológica |
 | `comparison/` | Comparação histórica conjunta da validação; sem script de consolidação integral |
@@ -74,11 +76,19 @@ python e2_final/build_report.py --results reproducoes/final --out reproducoes/re
 
 As métricas resumem **dez participantes**, sem misturar janelas de diferentes participantes como unidades independentes para a média principal. Consulte `e2_final/results/final_summary_mean_std.csv` e o TCC para os resultados completos e suas limitações.
 
+## Citação, testes automáticos e manutenção
+
+O arquivo [`CITATION.cff`](CITATION.cff) informa como citar **este repositório de software** pelo recurso *Cite this repository* do GitHub. A citação do código não substitui a referência ao TCC quando o texto acadêmico for utilizado. Não há DOI atribuído a esta versão.
+
+O [workflow de integração contínua](.github/workflows/ci.yml) roda em *pushes* à `main`, *pull requests* e acionamento manual. Ele confere o ambiente Python 3.13.5, valida o manifesto SHA-256 e executa os cinco testes unitários. **Não baixa nem executa os experimentos sobre a base bruta NinaPro DB5**; a reprodução integral dos resultados continua dependendo dos dados obtidos separadamente e das instruções do guia de reprodução.
+
+Antes de mesclar modificações futuras na `main`, revise o diff, execute `python verificar_integridade.py` e `python -W error -m unittest discover -s tests -v`, confirme que o workflow passou e atualize o manifesto quando arquivos versionados forem alterados. O manifesto não contém o hash de si próprio.
+
 ## Reprodutibilidade, direitos e publicação
 
 - A V2 foi reexecutada com dados locais fornecidos pelo autor, **não** com uma cópia da NinaPro autenticada externamente. Não compartilhe o banco bruto em commits, ZIPs ou releases.
-- O manifesto `docs/MANIFESTO_SHA256.csv` documenta os arquivos desta versão V2.2; não é o manifesto histórico original (que pertencia à V1).
+- O manifesto `docs/MANIFESTO_SHA256.csv` documenta os arquivos desta versão V2.3; não é o manifesto histórico original (que pertencia à V1).
 - `comparison/` conserva a consolidação histórica; o código de reprodução integral dessa etapa ainda não está disponível.
 - O código-fonte autoral é distribuído sob a **licença Zero-Clause BSD (0BSD)**. Consulte [`LICENSE`](LICENSE). Ela permite uso, cópia, alteração e redistribuição, inclusive comercial, sem obrigatoriedade de atribuição. Isso **não licencia** os dados da NinaPro nem materiais de terceiros, que continuam sujeitos às respectivas condições de uso.
-- **Auditoria Git:** o bundle fornecido pelo autor foi inspecionado em 12/11/2026, incluindo quatro commits alcançáveis e seus arquivos antigos. Não foram encontrados sinais brutos `.mat`, ZIPs da NinaPro ou credenciais reconhecíveis. O autor aceitou a exposição do e-mail que consta nos metadados dos commits. Escopo, limitações e resultados estão em [docs/HISTORICO_E_PRIVACIDADE.md](docs/HISTORICO_E_PRIVACIDADE.md). Esta revisão **não** publica nem altera o repositório remoto.
-- **Antes de alterar a visibilidade no GitHub:** incorporar esta V2.2 na branch de trabalho, conferir `git status` e `git diff`, executar os verificadores, fazer merge em `main` e verificar README, LICENSE e links no GitHub. A auditoria não cobre referências/objetos remotos ausentes do bundle nem mudanças posteriores à exportação. As condições de uso da NinaPro e de materiais de terceiros continuam aplicáveis.
+- **Auditoria Git:** o bundle fornecido pelo autor foi inspecionado em 12/11/2026, incluindo quatro commits alcançáveis e seus arquivos antigos. Não foram encontrados sinais brutos `.mat`, ZIPs da NinaPro ou credenciais reconhecíveis. O autor aceitou a exposição do e-mail que consta nos metadados dos commits. Escopo, limitações e resultados estão em [docs/HISTORICO_E_PRIVACIDADE.md](docs/HISTORICO_E_PRIVACIDADE.md). A auditoria diz respeito ao bundle examinado, não a eventuais mudanças posteriores no remoto.
+- **Estado de publicação:** o repositório está público na `main`. A auditoria histórica não cobre referências/objetos remotos ausentes do bundle nem mudanças posteriores à exportação. As condições de uso da NinaPro e de materiais de terceiros continuam aplicáveis.

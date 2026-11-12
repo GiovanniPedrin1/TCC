@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "Se este repositório for útil, cite o software e, quando pertinente, o TCC correspondente."
+type: software
+title: "TCC — sEMG, número de canais e classificação de gestos (NinaPro DB5)"
+authors:
+  - family-names: "Pedrini"
+    given-names: "Giovanni"
+version: "2.3"
+date-released: 2026-11-12
+repository-code: "https://github.com/GiovanniPedrin1/TCC"
+url: "https://github.com/GiovanniPedrin1/TCC"
+license: "0BSD"
+keywords:
+  - sEMG
+  - gesture recognition
+  - NinaPro DB5
+  - machine learning
