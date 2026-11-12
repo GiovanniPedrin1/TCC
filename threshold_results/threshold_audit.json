@@ -1,0 +1,48 @@
+{
+  "exercise": "E2 exclusively",
+  "train_repetitions": [
+    1,
+    3,
+    4
+  ],
+  "validation_repetitions": [
+    6
+  ],
+  "forbidden_test_repetitions": [
+    2,
+    5
+  ],
+  "window_samples": 40,
+  "step_samples": 20,
+  "channel_sets_one_based": {
+    "1": [
+      1
+    ],
+    "2": [
+      1,
+      5
+    ],
+    "4": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "8": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "threshold_rule": "mean(train-rest RMS)+3*std(train-rest RMS), per subject/channel",
+  "template_rule": "bitwise majority within each training repetition, then bitwise majority across reps 1/3/4",
+  "classifier": "minimum Hamming distance; any class tie => reject (-1)",
+  "tie_within_window_majority_rule": "exact 50/50 bit majority resolves to 0 deterministically",
+  "no_validation_tuning": true,
+  "forbidden_2_5_absent": true
+}
