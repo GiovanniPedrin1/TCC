@@ -1,6 +1,6 @@
 # TCC — sEMG, número de canais e classificação de gestos (NinaPro DB5)
 
-**Versão do repositório: V2.1 — V2 reproduzida, com licença 0BSD e auditoria preliminar de publicação (12/11/2026).**
+**Versão do repositório: V2.2 — protocolo reproduzido, licença 0BSD e auditoria do histórico Git concluída para o bundle fornecido (12/11/2026).**
 
 Código, resultados congelados e evidências de auditoria do trabalho **“Avaliação da influência do número de canais de sEMG na classificação de gestos por limiar e aprendizado de máquina”**.
 
@@ -77,7 +77,8 @@ As métricas resumem **dez participantes**, sem misturar janelas de diferentes p
 ## Reprodutibilidade, direitos e publicação
 
 - A V2 foi reexecutada com dados locais fornecidos pelo autor, **não** com uma cópia da NinaPro autenticada externamente. Não compartilhe o banco bruto em commits, ZIPs ou releases.
-- O manifesto `docs/MANIFESTO_SHA256.csv` documenta os arquivos incluídos no pacote V2; não é o manifesto histórico original (que pertencia à V1).
+- O manifesto `docs/MANIFESTO_SHA256.csv` documenta os arquivos desta versão V2.2; não é o manifesto histórico original (que pertencia à V1).
 - `comparison/` conserva a consolidação histórica; o código de reprodução integral dessa etapa ainda não está disponível.
 - O código-fonte autoral é distribuído sob a **licença Zero-Clause BSD (0BSD)**. Consulte [`LICENSE`](LICENSE). Ela permite uso, cópia, alteração e redistribuição, inclusive comercial, sem obrigatoriedade de atribuição. Isso **não licencia** os dados da NinaPro nem materiais de terceiros, que continuam sujeitos às respectivas condições de uso.
-- Revise [docs/ANTES_DE_PUBLICAR.md](docs/ANTES_DE_PUBLICAR.md) e [docs/HISTORICO_E_PRIVACIDADE.md](docs/HISTORICO_E_PRIVACIDADE.md). **A verificação dos objetos Git históricos ainda depende de um bundle/clonagem integral.** O pacote não foi publicado no GitHub por esta revisão.
+- **Auditoria Git:** o bundle fornecido pelo autor foi inspecionado em 12/11/2026, incluindo quatro commits alcançáveis e seus arquivos antigos. Não foram encontrados sinais brutos `.mat`, ZIPs da NinaPro ou credenciais reconhecíveis. O autor aceitou a exposição do e-mail que consta nos metadados dos commits. Escopo, limitações e resultados estão em [docs/HISTORICO_E_PRIVACIDADE.md](docs/HISTORICO_E_PRIVACIDADE.md). Esta revisão **não** publica nem altera o repositório remoto.
+- **Antes de alterar a visibilidade no GitHub:** incorporar esta V2.2 na branch de trabalho, conferir `git status` e `git diff`, executar os verificadores, fazer merge em `main` e verificar README, LICENSE e links no GitHub. A auditoria não cobre referências/objetos remotos ausentes do bundle nem mudanças posteriores à exportação. As condições de uso da NinaPro e de materiais de terceiros continuam aplicáveis.

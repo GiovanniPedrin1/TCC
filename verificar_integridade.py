@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verifica hashes SHA-256 dos arquivos distribuídos com a versão V2."""
+"""Verifica hashes SHA-256 dos arquivos distribuídos nesta versão."""
 import csv
 import hashlib
 from pathlib import Path

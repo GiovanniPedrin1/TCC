@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## V2.2 — 12/11/2026 — Encerramento da checklist interna
+
+- Removido `docs/ANTES_DE_PUBLICAR.md` por se tratar de checklist interna já superada pela auditoria do bundle.
+- Atualizadas as referências do README e o relatório `docs/HISTORICO_E_PRIVACIDADE.md` com o escopo e os achados efetivamente verificados.
+- Padronizados os finais de linha do manifesto, `.gitattributes` e CSV de bootstrap para LF (sem alterar valores numéricos); recalculados hashes SHA-256 e excluídos arquivos locais `__pycache__/`/`.pyc` do ZIP.
+- Nenhuma alteração no código experimental, nas métricas, nos resultados congelados ou na licença 0BSD.
+
+
 ## V2.1 — 12/11/2026 — Preparação para publicação
 
 - Adicionada a licença permissiva Zero-Clause BSD (0BSD) para o código autoral.

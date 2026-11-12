@@ -1,46 +1,39 @@
-# Auditoria preliminar do histórico e privacidade — 12/11/2026
+# Auditoria do histórico Git e privacidade — 12/11/2026
 
-## Materiais verificados
+Este documento registra a **auditoria concluída do bundle fornecido pelo autor**, não uma garantia absoluta sobre todos os objetos que possam existir no serviço remoto.
 
-- `historico_detalhado.txt`, fornecido pelo autor: lista quatro commits (`a1b3c08`, `3f16fb7`, `8162b0c`, `aa4ef57`) com estatísticas de alteração por arquivo.
-- Arquivos atualmente presentes nos pacotes `TCC.zip` (V1) e `TCC_Repositorio_V2.zip` (V2).
-- Busca automatizada por nomes típicos de arquivos privados (`.mat`, `.env`, chaves), padrões usuais de tokens e credenciais, caminhos de usuário e endereços de e-mail **nos arquivos atuais do pacote**.
+## Material e escopo
 
-## Achados
+- Arquivo examinado: `TCC_auditoria.bundle`, entregue separadamente pelo autor e **não incluído** neste repositório.
+- Verificação do bundle: `git bundle verify` aprovada; `git fsck --full --no-reflogs --unreachable` sem corrupção ou objetos inacessíveis relevantes nas referências exportadas.
+- Referências incluídas: `main` em `a1b3c08` e `Nao-verificado` em `aa4ef57` (além das referências equivalentes presentes no bundle).
+- Histórico alcançável: **4 commits**, **119 blobs** (141 objetos Git no total, incluindo trees e commits) e **147 caminhos históricos distintos**.
+- Foram inspecionados os arquivos dos commits antigos, incluindo versões substituídas ou reorganizadas; não apenas os arquivos atuais ou a listagem `git log --stat`.
 
-- Nenhum `.mat` ou ZIP bruto da NinaPro consta dos nomes de arquivos no histórico fornecido ou dos ZIPs examinados.
-- Nenhum arquivo de segredo óbvio nem padrão comum de token ou credencial foi encontrado nos arquivos atuais examinados.
-- Os commits listados possuem metadados de autoria com um endereço de e-mail pessoal. Ao publicar esses commits, esse endereço pode ficar visível a terceiros. Não reproduzimos o endereço nesta auditoria.
-- O pacote V2 não inclui uma pasta `.git`, logo **não contém os blobs antigos para inspeção direta**.
+## Constatações
 
-## Limites: não é certificado de ausência de vazamentos
+| Verificação | Resultado no bundle fornecido |
+| --- | --- |
+| Sinais brutos da NinaPro (`.mat`) ou ZIPs de participantes | Não encontrados |
+| Arquivos `.env`, chaves privadas ou arquivos de autenticação | Não encontrados |
+| Padrões reconhecíveis de tokens, senhas ou credenciais | Não encontrados |
+| CPF ou endereços de e-mail no conteúdo de arquivos | Não encontrados |
+| Resultados derivados identificados como S1–S10 | Presentes; não são os sinais originais |
+| Caminhos absolutos em arquivo histórico | Dois caminhos genéricos `/mnt/data/e2_final/...`; sem identificador pessoal |
+| Nome e e-mail do autor nos metadados dos commits | Presentes; o autor **confirmou que aceita** sua exposição pública |
 
-A saída `git log --stat` lista caminhos e contagens de linhas, mas não inclui o conteúdo histórico completo dos arquivos, nem comprova que todas as referências/branches foram incluídas. Um token poderia ter sido acrescentado e posteriormente apagado de um arquivo `.py`, `.md`, `.csv` ou `.json` sem aparecer nas estatísticas. O histórico completo (objetos Git) precisa ser inspecionado antes de tornar o repositório público.
+As verificações não identificaram motivos técnicos para reescrever o histórico exportado. A branch `Nao-verificado` descendia da `main` no momento do bundle; o merge pode preservar seus commits. **Excluir a branch depois do merge não exclui os commits da `main`.**
 
-**Excluir a branch `Nao-verificado` após fazer merge NÃO apaga seus commits do histórico de `main`.** Se houver dados sensíveis históricos, devem ser tratados antes do merge/publicação.
+## Limitações e precauções
 
-## Como fornecer o histórico completo para conferência
+1. A análise cobre o conteúdo e as referências **incluídos no bundle de 12/11/2026**, não eventuais refs omitidas, forks, pull requests, objetos órfãos ou alterações posteriores armazenadas remotamente.
+2. Uma busca automatizada e revisão de conteúdo não provam a inexistência de credenciais ofuscadas ou padrões não reconhecidos.
+3. A licença [0BSD](../LICENSE) aplica-se **somente ao código autoral**. Sinais, dados e outros materiais de terceiros, inclusive NinaPro DB5, continuam sujeitos às condições de uso e citação aplicáveis. A base bruta não é distribuída no pacote.
+4. A versão auditada no bundle corresponde à V2; as alterações documentais posteriores da V2.1/V2.2 devem ser conferidas no commit efetivamente publicado.
+5. Esta revisão de arquivos **não executou merge, push, exclusão de branch nem mudança de visibilidade** no GitHub.
 
-Na pasta local do repositório Git, com todas as branches/tags relevantes disponíveis, execute:
+## Verificação prática na publicação
 
-```bash
-git fetch --all --tags
-git branch -a
-git bundle create ../TCC_auditoria.bundle --all
-git bundle verify ../TCC_auditoria.bundle
-```
+Após incorporar a versão revisada, confira no GitHub a presença de `LICENSE`, os links do `README.md`, os arquivos versionados e a ausência de dados brutos. Compare também as referências atuais do remoto com as já auditadas, especialmente se houve novos commits desde o bundle. A publicação é uma decisão do autor.
 
-O `.bundle` contém os arquivos completos de todos os commits alcançáveis pelas referências incluídas, inclusive qualquer informação que porventura tenha sido removida em versões posteriores. Trate o arquivo como **privado** até a auditoria terminar. Revise também eventuais pull requests antigos, forks, Git LFS e outras referências remotas que não façam parte do bundle.
-
-## Antes de publicar
-
-1. Auditar objetos/blobs antigos e confirmar que não há credenciais e dados não redistribuíveis.
-2. Caso apareça algum segredo válido, revogar ou rotacionar primeiro e tratar a remoção do histórico conforme a documentação do GitHub.
-3. Verificar se deseja divulgar o e-mail de autoria embutido nos commits antigos; mudar a configuração para e-mail `noreply` não altera commits históricos.
-4. Confirmar regras de uso da NinaPro e direitos de terceiros. A 0BSD cobre somente a parte do código sobre a qual o autor tem direitos.
-5. Só então realizar o merge para `main`, excluir a branch de trabalho e tornar público.
-
-Fontes:
-- https://opensource.org/license/0bsd
-- https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository
-- https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository
+Para o relatório técnico mais extenso, consulte a cópia privada da auditoria entregue ao autor em 12/11/2026 (não incluída no repositório).

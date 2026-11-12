@@ -19,7 +19,7 @@
 | Identidade de janelas | `comparison/same_window_counts_audit.csv` | Contagens de janelas dos métodos na validação |
 | Validação Threshold | `threshold_results/threshold_results_by_subject.csv` | Resultados de referência do baseline na validação |
 | Bootstrap exploratório | `analises/bootstrap/Analise_Exploratoria_Etapa2_Bootstrap.csv` | Intervalos exploratórios, calculados posteriormente |
-| Manifesto | `docs/MANIFESTO_SHA256.csv` | Hash dos arquivos distribuídos na V2, exceto o próprio manifesto |
+| Manifesto | `docs/MANIFESTO_SHA256.csv` | Hash dos arquivos distribuídos nesta versão (V2.2), exceto o próprio manifesto |
 
 **A Tabela C2 do TCC usa caminhos relativos a `e2_final/`**, enquanto a presente tabela usa caminhos relativos à raiz do repositório. Isso explica a diferença aparente nos prefixos.
 
