@@ -17,10 +17,17 @@ Esta página descreve o material disponibilizado e deve ser lida em conjunto com
 - **LDA-TD:** classificador LDA aplicado às características temporais empregadas no script (RMS, MAV e WL, conforme implementação do protocolo); consulte `run_final_e2_frozen.py` para definição exata.
 - **Macro-F1:** média não ponderada do F1 das quatro classes, com cálculo por participante e configuração; a média principal entre participantes é descrita no TCC. A acurácia global é auxiliar por causa do desequilíbrio de repouso.
 
+## Métricas com rejeição: detalhe importante da V2
+
+Quando o Threshold/Hamming atribui `-1`, a amostra não recebe uma das quatro classes reais. O macro-F1 continua sendo calculado para `labels=[0, 1, 5, 6]` com `zero_division=0`; a amostra rejeitada contribui como erro da classe verdadeira. A *balanced accuracy* corresponde à média dos recalls das quatro classes reais, calculados sobre **todas as observações da classe**, rejeitadas ou não. As taxas direcionais de confusão usam o mesmo denominador correto: o total da classe verdadeira, sem omitir rejeições.
+
+A V2 expressa essas regras diretamente no código, sem depender de uma chamada que produz um aviso quando a predição `-1` está ausente em `y_true`. São formulas equivalentes às aplicadas no experimento original; **as saídas reproduzidas foram idênticas byte a byte**.
+
 ## Rastreabilidade e limites
 
-- As CSV e JSON são **registros do experimento**, preservados por identidade de bytes ao organizar o repositório.
-- Os relatórios consolidados já presentes refletem as execuções originais. Não é apresentado notebook, script único ou comando capaz de gerar todos os arquivos de `comparison/` a partir do zero.
-- A versão do interpretador e das bibliotecas empregada nas execuções originais não foi registrada. O `requirements.txt` representa um ambiente posterior **ainda não reexecutado**.
-- O código de teste final foi preservado byte a byte; apenas scripts auxiliares de relatório, exploração preliminar e análise bootstrap receberam adaptações de caminhos ou entrada.
-- A existência de arquivos de auditoria não equivale à verificação independente dos resultados, que depende de obter a base NinaPro e comparar as saídas.
+- Os CSVs, JSONs, figuras e relatórios **históricos** permanecem sem alterações em relação ao TCC.
+- A V2 alterou as funções de avaliação com rejeição em dois scripts e adicionou testes e um verificador de reprodução, sem mudar o protocolo nem as saídas científicas.
+- A reexecução com S1–S10 foi realizada em Python 3.13.5. O `requirements.txt` fixa as versões **efetivamente usadas nessa reexecução**; as versões do ambiente histórico permanecem desconhecidas.
+- O manifesto atualizado (`docs/MANIFESTO_SHA256.csv`) identifica os bytes da V2, enquanto a equivalência de saídas científicas foi conferida separadamente por `verificar_reproducao.py`.
+- A base de dados foi fornecida pelo autor e não foi autenticada byte a byte contra uma distribuição oficial independente da NinaPro.
+- A pasta `comparison/` contém os resultados históricos de consolidação; ainda não há script dedicado para reconstruir todos eles do zero.

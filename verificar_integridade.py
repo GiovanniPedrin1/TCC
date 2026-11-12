@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verifica hashes SHA-256 dos arquivos publicados contra o manifesto gerado na Etapa 4."""
+"""Verifica hashes SHA-256 dos arquivos distribuídos com a versão V2."""
 import csv
 import hashlib
 from pathlib import Path

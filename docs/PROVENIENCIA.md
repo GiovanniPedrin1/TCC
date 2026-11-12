@@ -13,7 +13,7 @@ Os dados brutos NinaPro não fazem parte desses pacotes.
 
 ## Alterações de organização
 
-1. Uma só cópia dos scripts `run_final_e2_frozen.py`, `run_lda_e2_validation.py` e `run_threshold_e2_validation.py` permanece nas pastas do fluxo a que pertencem. Seus conteúdos foram conservados exatamente.
+1. Uma só cópia dos scripts `run_final_e2_frozen.py`, `run_lda_e2_validation.py` e `run_threshold_e2_validation.py` permanece nas pastas do fluxo a que pertencem. Os scripts eram conservados exatamente na V1; na V2 apenas as funções de avaliação com rejeição do teste final e da validação Threshold/Hamming foram revisadas, sem modificar as saídas científicas.
 2. A cópia aninhada do pacote final e os arquivos repetidos de ambiente (`requirements.txt`, `.python-version` e `verificar_ambiente.py`) foram eliminados; suas versões de referência estão na raiz do repositório.
 3. Os arquivos de resultados, relatórios de resultados e auditoria foram preservados exatamente. Os READMEs de execução foram reescritos para evitar sobrescrever saídas originais. Alguns CSV idênticos aparecem em dois contextos (validação LDA e comparação conjunta) para conservar sua localização documental original.
 4. `e2_final/build_report.py`: mudaram somente as instruções que definem as pastas de entrada/saída e a análise de argumentos, preservando a lógica das tabelas, matrizes e figuras.
@@ -25,4 +25,13 @@ Os dados brutos NinaPro não fazem parte desses pacotes.
 
 As tabelas/relatórios originais não foram recalculados. O manifesto `docs/MANIFESTO_SHA256.csv` permite detectar alterações posteriores no conteúdo de cada arquivo, e `verificar_integridade.py` verifica os hashes atuais.
 
-**Ambiente histórico:** desconhecido. A fixação Python 3.15.2 e bibliotecas de `requirements.txt` é posterior ao experimento e não foi validada com NinaPro neste pacote.
+**Ambiente histórico:** desconhecido. A configuração proposta na V1 (Python 3.15.2) foi preservada em `docs/requirements_propostos_2026-11-10.txt`. A configuração padrão da V2 foi substituída pelo ambiente efetivamente usado na reexecução com a DB5 fornecida pelo autor: Python 3.13.5 e versões diretas especificadas em `requirements.txt`.
+
+## Auditoria adicional da V2
+
+- Os três scripts centrais de validação/teste foram reexecutados com S1–S10 e `python -W error`. As 24 saídas diretamente geradas foram **idênticas byte a byte** aos registros históricos.
+- `e2_final/build_report.py` produziu relatório e imagem também idênticos byte a byte; a análise bootstrap reproduziu as nove linhas históricas.
+- Foram acrescentados `verificar_reproducao.py` e cinco testes unitários de semântica da rejeição.
+- As alterações nos scripts não afetaram os arquivos científicos congelados que o TCC cita. O manifesto SHA-256 foi gerado novamente para cobrir a distribuição da V2.
+
+O relatório detalhado está em `docs/TESTES_V2.md`. A verificação compara artefatos provenientes da base fornecida pelo autor; não autentica a distribuição original da NinaPro nem substitui a avaliação acadêmica.

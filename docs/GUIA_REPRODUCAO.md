@@ -1,61 +1,70 @@
-# Guia de execução e verificação
+# Guia de reprodução — V2
 
-## 1. Preparar o ambiente de referência (não histórico)
+## 1. Preparação
 
-Instale **CPython 3.15.2** e crie um ambiente virtual. Linux/macOS: `python3.15 -m venv .venv && . .venv/bin/activate`. Windows PowerShell: `py -3.15 -m venv .venv; .\.venv\Scripts\Activate.ps1`. Confirme `python --version` (esperado: `3.15.2`).
+O ambiente reexecutado e documentado usa **CPython 3.13.5**. Em uma instalação desse Python:
 
 ```bash
+python -m venv .venv
+# Linux/macOS: source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 python verificar_ambiente.py
 python verificar_integridade.py
+python -m unittest discover -s tests -v
 ```
 
-As seis dependências diretas estão fixadas, mas as transitivas não; a compatibilidade completa só pode ser demonstrada por instalação e reexecução. **As versões usadas historicamente são desconhecidas**.
+`requirements.txt` fixa apenas versões diretas. As bibliotecas e a versão original do experimento histórico não foram registradas. A configuração anteriormente proposta para Python 3.15.2 foi arquivada em `docs/requirements_propostos_2026-11-10.txt` e não foi testada nesta revisão.
 
-## 2. Preparar os dados originais
+## 2. Dados de entrada
 
-Obtenha separadamente a base NinaPro DB5 a partir de https://ninapro.hevs.ch/instructions/DB5.html, observando suas regras de uso. O código dos scripts `run_lda_e2_validation.py`, `run_threshold_e2_validation.py` e `run_final_e2_frozen.py` espera um ZIP externo (`--db5-zip`) contendo ZIPs internos `s1.zip` até `s10.zip`, cada um com `Sx_E2_A1.mat` (x=1...10). Verifique a organização do arquivo baixado, pois a distribuição pode diferir.
+Obtenha a NinaPro DB5 pela fonte oficial: https://ninapro.hevs.ch/instructions/DB5.html. Os scripts de classificação esperam um ZIP **externo** com `s1.zip` a `s10.zip`; em cada arquivo interno deve existir `Sx_E2_A1.mat`, com as variáveis `emg`, `restimulus` e `rerepetition`.
 
-Não adicione arquivos `.mat` ou ZIPs brutos ao GitHub.
+Se a distribuição tiver formato diferente, prepare a estrutura necessária fora do repositório. Respeite as condições da NinaPro e não inclua dados `.mat` ou ZIPs brutos em commits públicos.
 
 ## 3. Validação metodológica (repetição 6)
 
-Execute a partir da raiz do repositório, usando saídas novas:
-
 ```bash
-python e2_validation/run_lda_e2_validation.py --db5-zip /caminho/DB5.zip --out reproducoes/validacao_lda
-python e2_validation/run_threshold_e2_validation.py --db5-zip /caminho/DB5.zip --out reproducoes/validacao_threshold
+python -W error e2_validation/run_lda_e2_validation.py --db5-zip /caminho/DB5.zip --out reproducoes/validacao_lda
+python -W error e2_validation/run_threshold_e2_validation.py --db5-zip /caminho/DB5.zip --out reproducoes/validacao_threshold
 ```
 
-Compare `reproducoes/validacao_lda/summary.csv` com `e2_validation/results/summary.csv` e os resultados de Threshold/Hamming com `threshold_results/`. As duas saídas não constroem automaticamente todos os artefatos da pasta `comparison/` (a consolidação conjunta não possui script dedicado no conjunto disponibilizado).
+O treino usa repetições 1, 3 e 4. A validação usa a repetição 6. As repetições 2 e 5 não participam da validação.
 
 ## 4. Teste final congelado (repetições 2 e 5)
 
 ```bash
-python e2_final/run_final_e2_frozen.py --db5-zip /caminho/DB5.zip --out reproducoes/e2_final/results
-python e2_final/build_report.py --results reproducoes/e2_final/results --out reproducoes/e2_final
+python -W error e2_final/run_final_e2_frozen.py --db5-zip /caminho/DB5.zip --out reproducoes/final
 ```
 
-**Nunca** sobrescreva `e2_final/results/`. Compare resultados de reprodução com `e2_final/results/final_results_by_subject.csv`, `final_summary_mean_std.csv`, `FINAL_PROTOCOL_AUDIT.json` e `confusion_matrices.json`. Diferenças possíveis de versões numéricas, plataforma ou dados devem ser reportadas; não reajuste parâmetros para forçar equivalência.
+O teste utiliza as repetições 2 e 5; a repetição 6 não participa de sua segmentação ou ajuste. O resultado *não* deve ser usado para ajustar parâmetros do modelo após o congelamento.
 
-O script `build_report.py` foi alterado **somente para aceitar caminhos de entrada/saída** na Etapa 4. O código que calcula as métricas e gera tabelas permanece igual ao código de origem; imagens e relatórios históricos do pacote não foram reconstruídos.
-
-## 5. Análise complementar de incerteza (posterior ao teste final)
+## 5. Comparação automática com os resultados de referência
 
 ```bash
-python analises/bootstrap/recalcular_bootstrap_etapa2.py --csv e2_final/results/final_results_by_subject.csv --out reproducoes/bootstrap.csv
+python verificar_reproducao.py \
+  --final reproducoes/final \
+  --validacao-lda reproducoes/validacao_lda \
+  --validacao-threshold reproducoes/validacao_threshold
 ```
 
-Essa análise usa 50.000 reamostragens pareadas dos dez participantes, com semente fixa. Os intervalos são exploratórios, não testes confirmatórios. A versão distribuída desse script aceita agora o CSV do repositório, além da opção histórica `--zip`.
+O verificador lê 24 arquivos diretamente gerados pelos scripts, exige a presença de todos eles e compara bytes ou, quando preciso, dados numéricos com tolerância `atol=1e-12`, `rtol=1e-10`. **Ele não escreve nos arquivos históricos nem ajusta números para forçar equivalência.** Cada pasta pode ser verificada separadamente quando as outras ainda não tiverem sido executadas.
 
-## 6. Exploração preliminar auxiliar
+## 6. Relatório e bootstrap
 
-O arquivo `analises/exploracao_threshold/run_db5_threshold_comparison.py` é **exploratório** (configurações A–D), não o script utilizado no teste final congelado. Requer arquivos `.mat` já extraídos em subpastas `s1/ ... s10/`, sendo informado o diretório com `--extracted-root` e uma pasta nova com `--out`. Seus caminhos foram parametrizados sem modificar cálculos. Não há saídas completas dessa exploração neste pacote para confronto automático.
+```bash
+python e2_final/build_report.py --results reproducoes/final --out reproducoes/relatorio
+python analises/bootstrap/recalcular_bootstrap_etapa2.py --csv reproducoes/final/final_results_by_subject.csv --out reproducoes/bootstrap.csv
+```
+
+`build_report.py` reconstrói o relatório e o gráfico a partir das saídas já calculadas; não reexecuta a classificação. O bootstrap usa 50.000 reamostragens pareadas dos participantes e tem caráter exploratório. O script também aceita a opção legada `--zip`.
+
+## 7. Exploração auxiliar e limites
+
+O script `analises/exploracao_threshold/run_db5_threshold_comparison.py` é uma exploração A–D separada do experimento final e requer arquivos `.mat` extraídos em subpastas por participante:
 
 ```bash
 python analises/exploracao_threshold/run_db5_threshold_comparison.py --extracted-root /caminho/db5_extraido --out reproducoes/exploracao
 ```
 
-## 7. Escopo dos testes realizados na organização
-
-A organização verifica hashes, sintaxe e formatos, além de comparações documentais existentes. **Não valida o desempenho na instalação nova e não substitui reexecução independente**, que requer os dados originais.
+O diretório `comparison/` preserva os relatórios e as tabelas históricas da consolidação da validação, mas **não há código dedicado para reconstruir todos os seus arquivos**. Consulte `docs/TESTES_V2.md` e `docs/PROVENIENCIA.md` para distinguir resultados reexecutados, artefatos preservados e limitações.

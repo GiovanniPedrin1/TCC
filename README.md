@@ -1,60 +1,83 @@
-# TCC — Canais de sEMG e classificação de gestos (NinaPro DB5, exercício E2)
+# TCC — sEMG, número de canais e classificação de gestos (NinaPro DB5)
 
-Repositório de referência dos códigos, resultados e arquivos de auditoria associados ao TCC **“Avaliação da influência do número de canais de sEMG na classificação de gestos por limiar e aprendizado de máquina”**.
+**Versão do repositório: V2 — revisão de legibilidade e reprodutibilidade (11/11/2026).**
 
-Este material contém os resultados **congelados** do experimento e scripts que permitem tentar a reexecução com a base NinaPro DB5 original. **Não inclui os dados brutos nem comprova que a reexecução no ambiente proposto gerará resultados numericamente idênticos**. A versão exata do ambiente histórico não foi registrada.
+Código, resultados congelados e evidências de auditoria do trabalho **“Avaliação da influência do número de canais de sEMG na classificação de gestos por limiar e aprendizado de máquina”**.
 
-## Organização
+> **Resultados preservados.** A V2 corrige avisos de avaliação sem alterar parâmetros, divisão de dados, decisões de classificação ou métricas. As saídas das três execuções foram confrontadas com os registros históricos: **24/24 arquivos gerados idênticos em bytes**. Os testes com S1–S10 usaram os dados NinaPro enviados separadamente pelo autor. A base bruta não integra este repositório.
 
-| Pasta/arquivo | Conteúdo |
+## Estrutura e ordem de leitura
+
+| Local | Para que serve |
 | --- | --- |
-| `e2_final/` | Script e resultados do teste final (treino 1, 3 e 4; teste 2 e 5), relatório, figuras e auditorias |
-| `e2_validation/` | Script de validação LDA, script Threshold/Hamming para E2, resultados da validação (repetição 6), relatório e auditorias |
-| `comparison/` | Resultados e relatório da comparação conjunta de validação entre Threshold/Hamming e LDA |
-| `threshold_results/` | Resultados de Threshold/Hamming na validação, inclusive auditoria e templates |
-| `analises/bootstrap/` | Análise exploratória posterior ao teste final, com script e CSV da Etapa 2 |
-| `analises/exploracao_threshold/` | Código auxiliar da exploração preliminar A–D, distinto do teste final |
-| `docs/` | Guias, protocolo, proveniência e manifesto de integridade |
-| `.python-version`, `requirements.txt`, `verificar_ambiente.py` | Ambiente **proposto** para novas execuções (não ambiente histórico) |
+| `docs/GUIA_REPRODUCAO.md` | Passo a passo para reproduzir os experimentos |
+| `docs/TESTES_V2.md` | Ambiente, testes, resultados e limites da V2 |
+| `docs/GUIA_LEITURA_DO_CODIGO.md` | Explicação passo a passo das funções e do tratamento de rejeições |
+| `docs/PROTOCOLO_E_LIMITACOES.md` | Partições de repetições, métricas e rejeições |
+| `e2_validation/run_lda_e2_validation.py` | Validação LDA-RMS / LDA-TD com repetição 6 |
+| `e2_validation/run_threshold_e2_validation.py` | Validação do Threshold/Hamming com repetição 6 |
+| `e2_final/run_final_e2_frozen.py` | Teste final congelado, usando somente repetições 2 e 5 |
+| `e2_final/build_report.py` | Reconstrução de figura, matrizes e relatório do teste final |
+| `verificar_reproducao.py` | Compara saídas novas com as saídas científicas preservadas |
+| `verificar_integridade.py` | Verifica os arquivos do repositório pelo manifesto SHA-256 |
+| `tests/` | Testes automatizados das métricas em presença de rejeição |
+| `analises/bootstrap/` | Reamostragem exploratória posterior ao teste final |
+| `analises/exploracao_threshold/` | Exploração auxiliar A–D anterior à seleção metodológica |
+| `comparison/` | Comparação histórica conjunta da validação; sem script de consolidação integral |
+| `threshold_results/` | Registros históricos do Threshold/Hamming na validação |
 
-As pastas `e2_final/`, `e2_validation/`, `comparison/` e `threshold_results/` conservam os nomes relativos dos artefatos que fundamentam o Apêndice C do TCC. **Os arquivos CSV, JSON, PNG e relatórios originais não foram recalculados ou alterados nesta organização.**
+A localização e a finalidade de arquivos específicos do TCC constam de [docs/MAPA_ARTEFATOS.md](docs/MAPA_ARTEFATOS.md). O histórico de alterações da V2 está em [CHANGELOG.md](CHANGELOG.md).
 
-## Instalação e reexecução
+## O protocolo não foi alterado
 
-O ambiente de referência proposto em 10/11/2026 fixa **Python 3.15.2** e seis dependências diretas (`requirements.txt`). Essa combinação ainda **não foi validada por reexecução integral**. Não existe lockfile de dependências transitivas nem informação sobre versões históricas.
+- **Dados:** NinaPro DB5, Exercise 2, S1–S10.
+- **Classes reais:** 0 (repouso), 1 (thumbs up), 5 (mão aberta), 6 (mão fechada).
+- **Treinamento:** repetições 1, 3 e 4. **Validação:** repetição 6. **Teste final:** repetições 2 e 5.
+- **Janelas:** 200 ms, 50% de sobreposição (40 amostras, passo 20, 200 Hz).
+- **Canais:** 1, 2, 4 e 8 em subconjuntos espaciais predeterminados.
+- **Métodos:** Threshold/Hamming, LDA-RMS e LDA-TD. No Threshold/Hamming, `-1` significa rejeição, não uma quinta classe real; rejeições contam como erro nas métricas.
 
-Após criar um ambiente virtual com Python 3.15.2:
+## Início rápido
+
+Use CPython **3.13.5** com as dependências do `requirements.txt`, correspondentes ao ambiente em que a V2 foi reexecutada em 11/11/2026. A versão exata do ambiente *histórico original* não é conhecida. O ambiente proposto antes da V2 (Python 3.15.2) foi preservado apenas como referência em `docs/requirements_propostos_2026-11-10.txt` e não faz parte da configuração testada.
 
 ```bash
+python -m venv .venv
+# Linux/macOS: source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 python verificar_ambiente.py
+python verificar_integridade.py
+python -m unittest discover -s tests -v
 ```
 
-O nome e a localização da base devem ser informados pelo usuário. **Não coloque a base bruta dentro do repositório**. Exemplo de teste final, executado a partir da raiz do projeto:
+Prepare **fora do repositório** um ZIP com `s1.zip` a `s10.zip`, cada qual contendo `Sx_E2_A1.mat`. Substitua `/caminho/DB5.zip` pelo caminho real:
 
 ```bash
-python e2_final/run_final_e2_frozen.py --db5-zip /caminho/DB5.zip --out reproducoes/e2_final/results
-python e2_final/build_report.py --results reproducoes/e2_final/results --out reproducoes/e2_final
+python e2_validation/run_lda_e2_validation.py --db5-zip /caminho/DB5.zip --out reproducoes/validacao_lda
+python e2_validation/run_threshold_e2_validation.py --db5-zip /caminho/DB5.zip --out reproducoes/validacao_threshold
+python e2_final/run_final_e2_frozen.py --db5-zip /caminho/DB5.zip --out reproducoes/final
+python verificar_reproducao.py --final reproducoes/final --validacao-lda reproducoes/validacao_lda --validacao-threshold reproducoes/validacao_threshold
+python e2_final/build_report.py --results reproducoes/final --out reproducoes/relatorio
 ```
 
-Para preservar os resultados originais, **nunca execute com `--out e2_final/results`**. O relatório reconstruído pela segunda linha é derivado dos resultados de uma nova execução; ele não executa novamente o experimento.
+**Não use os diretórios históricos `e2_final/results`, `e2_validation/results` ou `threshold_results` no argumento `--out`.** Eles contêm as referências congeladas. O `.gitignore` exclui `reproducoes/` por padrão.
 
-Instruções de validação, análise bootstrap e limitações: [docs/GUIA_REPRODUCAO.md](docs/GUIA_REPRODUCAO.md).
+## Resultados principais (macro-F1 médio, teste final)
 
-## Escopo metodológico
+| Canais | Threshold/Hamming | LDA-RMS | LDA-TD |
+| ---: | ---: | ---: | ---: |
+| 1 | 0,190 | 0,491 | 0,530 |
+| 2 | 0,326 | 0,640 | 0,668 |
+| 4 | 0,520 | 0,778 | 0,785 |
+| 8 | 0,682 | 0,828 | 0,840 |
 
-- Base: NinaPro DB5, arquivos `Sx_E2_A1.mat` de dez participantes, exercícios E2.
-- Classes: repouso (0), polegar levantado (1), mão aberta (5) e mão fechada (6).
-- Número de canais: 1, 2, 4 e 8, com subconjuntos fixos.
-- Treino: repetições 1, 3 e 4; validação: repetição 6; teste final: repetições 2 e 5.
-- Métodos do teste final: Threshold/Hamming, LDA-RMS e LDA-TD. A rejeição (-1) do Threshold/Hamming não constitui uma quinta classe real.
+As métricas resumem **dez participantes**, sem misturar janelas de diferentes participantes como unidades independentes para a média principal. Consulte `e2_final/results/final_summary_mean_std.csv` e o TCC para os resultados completos e suas limitações.
 
-Leia [docs/PROTOCOLO_E_LIMITACOES.md](docs/PROTOCOLO_E_LIMITACOES.md) antes de comparar os resultados.
+## Reprodutibilidade, direitos e publicação
 
-## Reprodutibilidade, auditoria e acesso aos dados
-
-As saídas fornecidas são registros históricos; os testes automatizados realizados para organizar este pacote verificam presença, identidade por hash e sintaxe de código, mas **não reexecutam a classificação com sinais NinaPro**. Parte da consolidação da comparação de validação não tem script dedicado nos materiais recebidos; ver [docs/PROVENIENCIA.md](docs/PROVENIENCIA.md). Consulte [docs/MANIFESTO_SHA256.csv](docs/MANIFESTO_SHA256.csv) para hashes e execute `python verificar_integridade.py`.
-
-A base NinaPro DB5 é obtida a partir de sua fonte oficial, sob as condições de acesso e uso definidas pelo provedor. Este repositório não redistribui esses arquivos.
-
-**Licenciamento do código do autor:** ainda não foi definido um arquivo `LICENSE`; a ausência de licença não deve ser interpretada como autorização irrestrita para reutilização. Antes da publicação pública, decidir a licença e revisar direitos de terceiros. Checklist em [docs/ANTES_DE_PUBLICAR.md](docs/ANTES_DE_PUBLICAR.md).
+- A V2 foi reexecutada com dados locais fornecidos pelo autor, **não** com uma cópia da NinaPro autenticada externamente. Não compartilhe o banco bruto em commits, ZIPs ou releases.
+- O manifesto `docs/MANIFESTO_SHA256.csv` documenta os arquivos incluídos no pacote V2; não é o manifesto histórico original (que pertencia à V1).
+- `comparison/` conserva a consolidação histórica; o código de reprodução integral dessa etapa ainda não está disponível.
+- Não foi definida uma licença de reutilização para o código autoral. **A ausência de `LICENSE` não é autorização de uso irrestrito.** Verifique os direitos de terceiros antes da publicação.
+- Revise [docs/ANTES_DE_PUBLICAR.md](docs/ANTES_DE_PUBLICAR.md). O pacote não foi publicado no GitHub por esta revisão.

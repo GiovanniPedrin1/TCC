@@ -22,7 +22,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.io import loadmat
-from sklearn.metrics import f1_score, balanced_accuracy_score, accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 
 LABELS=np.array([0,1,5,6],int)
 LABEL_NAMES={0:'repouso',1:'thumbs_up',5:'mao_aberta',6:'mao_fechada'}
@@ -48,6 +48,7 @@ def load_e2(outer,s):
     return emg,y,rep,hits[0]
 
 def segment_rms(emg,y,rep):
+    """Segmenta RMS com treino e validação; nunca inclui as repetições de teste."""
     starts=[]; ys=[]; rs=[]; rms=[]
     eligible=np.isin(rep,sorted(ALLOWED))
     edges=np.diff(np.r_[False,eligible,False].astype(np.int8))
@@ -75,6 +76,7 @@ def majority_bits(a):
     return (np.mean(a,axis=0)>0.5).astype(np.int8)
 
 def build_templates(bits,y,rep):
+    """Maioria binária por repetição, seguida de maioria entre repetições."""
     templates={}
     rep_templates={}
     for lab in LABELS:
@@ -90,6 +92,7 @@ def build_templates(bits,y,rep):
     return templates,rep_templates
 
 def predict_hamming(bits,templates):
+    """Empates na menor distância são rejeitados com rótulo -1."""
     T=np.vstack([templates[int(l)] for l in LABELS])
     dist=np.sum(bits[:,None,:]!=T[None,:,:],axis=2)
     minv=dist.min(axis=1)
@@ -105,6 +108,21 @@ def cm_with_reject(y,pred):
     li={int(v):i for i,v in enumerate(LABELS)}; ci={int(v):i for i,v in enumerate(cols)}
     for t,p in zip(y,pred): cm[li[int(t)],ci[int(p)]]+=1
     return cm
+
+def balanced_accuracy_with_reject(y_true, y_pred):
+    """Recall médio entre classes reais; a rejeição (-1) conta como erro.
+
+    Evita o aviso emitido por `balanced_accuracy_score` quando `-1`
+    ocorre somente nas predições. Equivale à média dos quatro recalls.
+    """
+    recalls = []
+    for label in LABELS:
+        mask = y_true == label
+        if not np.any(mask):
+            raise ValueError(f"Classe verdadeira ausente: {label}")
+        recalls.append(np.mean(y_pred[mask] == label))
+    return float(np.mean(recalls))
+
 
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument('--db5-zip',type=Path,required=True); ap.add_argument('--out',type=Path,required=True)
@@ -134,7 +152,7 @@ def main():
                     'subject':s,'channels':nch,'pipeline':'Threshold/Hamming','n_features':nch,
                     'n_train':int(tr.sum()),'n_val':int(va.sum()),
                     'macro_f1':float(f1_score(yv,pred,labels=LABELS,average='macro',zero_division=0)),
-                    'balanced_accuracy':float(balanced_accuracy_score(yv,pred)),
+                    'balanced_accuracy':balanced_accuracy_with_reject(yv,pred),
                     'accuracy':float(accuracy_score(yv,pred)),
                     'rejection_rate':float(np.mean(pred==-1)),
                     'closed_to_thumb_n':int(cm[closed_i,thumb_i]),'thumb_to_closed_n':int(cm[thumb_i,closed_i]),

@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 from scipy.io import loadmat
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.metrics import f1_score, balanced_accuracy_score, accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 
 LABELS=np.array([0,1,5,6], dtype=int)
 LABEL_NAMES={0:'repouso',1:'thumbs_up',5:'mao_aberta',6:'mao_fechada'}
@@ -69,6 +69,11 @@ def audit_raw(db5:Path)->pd.DataFrame:
 
 
 def segment_features(emg,y,rep)->WindowSet:
+    """Extrai RMS, MAV e WL somente de trechos com classe/repetição fixa.
+
+    A repetição 6 nunca entra nesta função de teste final. Cada janela tem
+    40 amostras e passo 20, sem atravessar bordas temporais de rótulo.
+    """
     starts=[]; ys=[]; rs=[]; rms=[]; mav=[]; wl=[]
     # hard firewall: only train/test repetitions can ever be indexed below; rep6 is not segmented
     eligible=np.isin(rep,sorted(ALLOWED_REPS))
@@ -105,6 +110,7 @@ def majority_bits(a):
 
 
 def baseline_templates(bits,y,rep):
+    """Calcula templates por maioria em cada repetição de treino e depois entre elas."""
     templates={}; rep_templates={}
     for lab in LABELS:
         one=[]
@@ -117,6 +123,7 @@ def baseline_templates(bits,y,rep):
 
 
 def hamming_predict(bits,templates):
+    """Atribui a classe de menor distância; empate entre classes resulta em -1."""
     T=np.vstack([templates[int(l)] for l in LABELS])
     dist=np.sum(bits[:,None,:]!=T[None,:,:],axis=2)
     ismin=dist==dist.min(axis=1)[:,None]
@@ -133,9 +140,18 @@ def confusion_with_reject(y,pred):
     return cm
 
 
-def confusion_4(y,pred):
-    cm=np.zeros((4,4),int); idx={int(v):i for i,v in enumerate(LABELS)}
-    for a,b in zip(y,pred): cm[idx[int(a)],idx[int(b)]]+=1
+def confusion_4(y, pred):
+    """Matriz 4x4 de predições válidas; omite a *coluna* das rejeições.
+
+    O total de cada classe real deve ser obtido de `y`, nunca pela soma
+    desta matriz parcial quando há predição -1.
+    """
+    cm = np.zeros((4, 4), int)
+    idx = {int(label): i for i, label in enumerate(LABELS)}
+    for actual, predicted in zip(y, pred):
+        if int(predicted) == -1:
+            continue
+        cm[idx[int(actual)], idx[int(predicted)]] += 1
     return cm
 
 
@@ -170,17 +186,50 @@ def fit_lda_strict(x,y):
     return model,texts
 
 
-def metrics_common(y,pred,cm4=None):
-    if cm4 is None: cm4=confusion_4(y,pred)
-    f1s=f1_score(y,pred,labels=LABELS,average=None,zero_division=0)
-    iT=1;iC=3
-    row={'macro_f1':float(f1_score(y,pred,labels=LABELS,average='macro',zero_division=0)),
-         'balanced_accuracy':float(balanced_accuracy_score(y,pred)),
-         'accuracy':float(accuracy_score(y,pred)),
-         'closed_to_thumb_n':int(cm4[iC,iT]),'thumb_to_closed_n':int(cm4[iT,iC]),
-         'closed_to_thumb_rate':float(cm4[iC,iT]/cm4[iC].sum()),
-         'thumb_to_closed_rate':float(cm4[iT,iC]/cm4[iT].sum())}
-    for lab,sc in zip(LABELS,f1s): row[f'f1_{LABEL_NAMES[int(lab)]}']=float(sc)
+def balanced_accuracy_with_reject(y_true, y_pred):
+    """Média de recall das quatro classes reais, incluindo rejeições como erros.
+
+    `-1` é uma predição indeterminada, não uma quinta classe verdadeira.
+    Calcular os recalls diretamente evita o aviso do scikit-learn quando
+    o vetor de predições contém uma classe ausente em `y_true`.
+    """
+    recalls = []
+    for label in LABELS:
+        mask = y_true == label
+        if not np.any(mask):
+            raise ValueError(f"Classe verdadeira ausente: {label}")
+        recalls.append(np.mean(y_pred[mask] == label))
+    return float(np.mean(recalls))
+
+
+def metrics_common(y, pred, cm4=None):
+    """Métricas por participante; rejeições integram os denominadores reais.
+
+    A matriz 4x4 exclui a *coluna* de rejeição, mas as taxas direcionais
+    usam o número de observações verdadeiras de cada classe, não a soma
+    parcial de sua linha na matriz. Isso evita divisão por zero e impede
+    superestimar as taxas quando há rejeição.
+    """
+    if cm4 is None:
+        cm4 = confusion_4(y, pred)
+    f1s = f1_score(y, pred, labels=LABELS, average=None, zero_division=0)
+    thumb_idx, closed_idx = 1, 3
+    true_closed = int(np.count_nonzero(y == LABELS[closed_idx]))
+    true_thumb = int(np.count_nonzero(y == LABELS[thumb_idx]))
+    if true_closed == 0 or true_thumb == 0:
+        raise ValueError("As duas classes direcionais precisam estar presentes")
+
+    row = {
+        'macro_f1': float(f1_score(y, pred, labels=LABELS, average='macro', zero_division=0)),
+        'balanced_accuracy': balanced_accuracy_with_reject(y, pred),
+        'accuracy': float(accuracy_score(y, pred)),
+        'closed_to_thumb_n': int(cm4[closed_idx, thumb_idx]),
+        'thumb_to_closed_n': int(cm4[thumb_idx, closed_idx]),
+        'closed_to_thumb_rate': float(cm4[closed_idx, thumb_idx] / true_closed),
+        'thumb_to_closed_rate': float(cm4[thumb_idx, closed_idx] / true_thumb),
+    }
+    for lab, sc in zip(LABELS, f1s):
+        row[f'f1_{LABEL_NAMES[int(lab)]}'] = float(sc)
     return row
 
 
@@ -211,7 +260,7 @@ def main():
           templates,rep_templates=baseline_templates(bits[tr],ws.y[tr],ws.rep[tr])
           pred,dist=hamming_predict(bits[te],templates); yt=ws.y[te]
           cmr=confusion_with_reject(yt,pred)
-          # 4x4 correct-pred confusion only; rejected predictions are omitted from columns but remain in denominators via y counts for directional rates handled below
+          # Matriz 4x4 inclui apenas predições de classe; métricas usam os totais reais.
           cm4=np.zeros((4,4),int)
           for i,lab in enumerate(LABELS):
             for j,plab in enumerate(LABELS): cm4[i,j]=int(np.sum((yt==lab)&(pred==plab)))
@@ -220,9 +269,6 @@ def main():
                     'n_train':int(tr.sum()),'n_test':int(te.sum()),'sigma_guards':0,'numeric_warnings':'',
                     'rejection_rate':float(np.mean(pred==-1)),'coverage':float(np.mean(pred!=-1)),
                     'selective_accuracy_nonrejected':float(accuracy_score(yt[pred!=-1],pred[pred!=-1])) if np.any(pred!=-1) else np.nan})
-          # directional rates must include rejected samples in true-class denominator
-          iT=1;iC=3
-          m['closed_to_thumb_rate']=float(cmr[iC,iT]/cmr[iC].sum()); m['thumb_to_closed_rate']=float(cmr[iT,iC]/cmr[iT].sum())
           rows.append(m); cms[f'S{s}_{nch}ch_Threshold_Hamming']=cmr.tolist()
           for j,c in enumerate(ch):
             thresholds.append({'subject':s,'channels':nch,'channel_one_based':c+1,'rest_mu_rms':float(mu[j]),'rest_sd_rms':float(sd[j]),'threshold_mu_plus_3sd':float(th[j]),
