@@ -1,5 +1,14 @@
 # Histórico de alterações
 
+## V2.4 — 13/11/2026 — Simplificação da documentação pública
+
+- Removidos `docs/HISTORICO_E_PRIVACIDADE.md` e `docs/requirements_propostos_2026-11-10.txt`, que documentavam etapas internas de publicação e um ambiente preliminar não utilizado na reexecução verificada.
+- Removido `docs/PROVENIENCIA.md`; as informações relevantes ao leitor já estão consolidadas em `README.md`, `docs/TESTES_V2.md`, `docs/GUIA_REPRODUCAO.md` e `docs/PROTOCOLO_E_LIMITACOES.md`.
+- Migrada para `docs/MAPA_ARTEFATOS.md` a observação de que alguns CSVs idênticos são preservados em diretórios distintos por pertencerem a contextos documentais diferentes.
+- Simplificadas as referências do README e do guia de reprodução, mantendo como ambiente de referência apenas a reexecução verificada em Python 3.13.5.
+- Regenerado `docs/MANIFESTO_SHA256.csv` para os arquivos da V2.4.
+- Nenhuma alteração nos classificadores, protocolo experimental, parâmetros ou resultados científicos preservados.
+
 ## V2.3 — 12/11/2026 — Citação e integração contínua
 
 - Adicionado `CITATION.cff` para citação do repositório de software no GitHub, sem inventar DOI para o TCC.
