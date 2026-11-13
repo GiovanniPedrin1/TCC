@@ -5,8 +5,8 @@ title: "TCC — sEMG, número de canais e classificação de gestos (NinaPro DB5
 authors:
   - family-names: "Pedrini"
     given-names: "Giovanni"
-version: "2.3"
-date-released: 2026-11-12
+version: "2.4"
+date-released: 2026-11-13
 repository-code: "https://github.com/GiovanniPedrin1/TCC"
 url: "https://github.com/GiovanniPedrin1/TCC"
 license: "0BSD"

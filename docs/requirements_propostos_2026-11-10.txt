@@ -1,9 +1,0 @@
-# Ambiente de referência proposto em 2026-11-10 (não histórico).
-# Interpretador Python: CPython 3.15.2 (.python-version).
-# Dependências DIRETAS fixadas; transitivas não estão integralmente travadas.
-numpy==2.5.4
-pandas==3.1.1
-scipy==1.18.1
-scikit-learn==1.9.1
-matplotlib==3.11.2
-tabulate==0.10.0

@@ -1,6 +1,6 @@
 # TCC — sEMG, número de canais e classificação de gestos (NinaPro DB5)
 
-**Versão do repositório: V2.3 — protocolo reproduzido, licença 0BSD, auditoria do histórico Git concluída e verificações automáticas (12/11/2026).**
+**Versão do repositório: V2.4 — protocolo reproduzido, licença 0BSD e verificações automáticas (13/11/2026).**
 
 Código, resultados congelados e evidências de auditoria do trabalho **“Avaliação da influência do número de canais de sEMG na classificação de gestos por limiar e aprendizado de máquina”**.
 
@@ -41,7 +41,7 @@ A localização e a finalidade de arquivos específicos do TCC constam de [docs/
 
 ## Início rápido
 
-Use CPython **3.13.5** com as dependências do `requirements.txt`, correspondentes ao ambiente em que a V2 foi reexecutada em 11/11/2026. A versão exata do ambiente *histórico original* não é conhecida. O ambiente proposto antes da V2 (Python 3.15.2) foi preservado apenas como referência em `docs/requirements_propostos_2026-11-10.txt` e não faz parte da configuração testada.
+Use CPython **3.13.5** com as dependências do `requirements.txt`, correspondentes ao ambiente em que a V2 foi reexecutada em 11/11/2026. As versões exatas de Python e das bibliotecas utilizadas na execução histórica original não foram registradas.
 
 ```bash
 python -m venv .venv
@@ -84,11 +84,9 @@ O [workflow de integração contínua](.github/workflows/ci.yml) roda em *pushes
 
 Antes de mesclar modificações futuras na `main`, revise o diff, execute `python verificar_integridade.py` e `python -W error -m unittest discover -s tests -v`, confirme que o workflow passou e atualize o manifesto quando arquivos versionados forem alterados. O manifesto não contém o hash de si próprio.
 
-## Reprodutibilidade, direitos e publicação
+## Reprodutibilidade e direitos
 
 - A V2 foi reexecutada com dados locais fornecidos pelo autor, **não** com uma cópia da NinaPro autenticada externamente. Não compartilhe o banco bruto em commits, ZIPs ou releases.
-- O manifesto `docs/MANIFESTO_SHA256.csv` documenta os arquivos desta versão V2.3; não é o manifesto histórico original (que pertencia à V1).
+- O manifesto `docs/MANIFESTO_SHA256.csv` documenta os arquivos desta versão V2.4; não é o manifesto histórico original (que pertencia à V1).
 - `comparison/` conserva a consolidação histórica; o código de reprodução integral dessa etapa ainda não está disponível.
 - O código-fonte autoral é distribuído sob a **licença Zero-Clause BSD (0BSD)**. Consulte [`LICENSE`](LICENSE). Ela permite uso, cópia, alteração e redistribuição, inclusive comercial, sem obrigatoriedade de atribuição. Isso **não licencia** os dados da NinaPro nem materiais de terceiros, que continuam sujeitos às respectivas condições de uso.
-- **Auditoria Git:** o bundle fornecido pelo autor foi inspecionado em 12/11/2026, incluindo quatro commits alcançáveis e seus arquivos antigos. Não foram encontrados sinais brutos `.mat`, ZIPs da NinaPro ou credenciais reconhecíveis. O autor aceitou a exposição do e-mail que consta nos metadados dos commits. Escopo, limitações e resultados estão em [docs/HISTORICO_E_PRIVACIDADE.md](docs/HISTORICO_E_PRIVACIDADE.md). A auditoria diz respeito ao bundle examinado, não a eventuais mudanças posteriores no remoto.
-- **Estado de publicação:** o repositório está público na `main`. A auditoria histórica não cobre referências/objetos remotos ausentes do bundle nem mudanças posteriores à exportação. As condições de uso da NinaPro e de materiais de terceiros continuam aplicáveis.

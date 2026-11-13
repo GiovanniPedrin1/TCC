@@ -14,7 +14,7 @@ python verificar_integridade.py
 python -m unittest discover -s tests -v
 ```
 
-`requirements.txt` fixa apenas versões diretas. As bibliotecas e a versão original do experimento histórico não foram registradas. A configuração anteriormente proposta para Python 3.15.2 foi arquivada em `docs/requirements_propostos_2026-11-10.txt` e não foi testada nesta revisão.
+`requirements.txt` fixa apenas versões diretas. As versões exatas de Python e das bibliotecas utilizadas na execução histórica original não foram registradas; o ambiente documentado aqui corresponde à reexecução verificada da V2.
 
 ## 2. Dados de entrada
 
@@ -67,4 +67,4 @@ O script `analises/exploracao_threshold/run_db5_threshold_comparison.py` é uma 
 python analises/exploracao_threshold/run_db5_threshold_comparison.py --extracted-root /caminho/db5_extraido --out reproducoes/exploracao
 ```
 
-O diretório `comparison/` preserva os relatórios e as tabelas históricas da consolidação da validação, mas **não há código dedicado para reconstruir todos os seus arquivos**. Consulte `docs/TESTES_V2.md` e `docs/PROVENIENCIA.md` para distinguir resultados reexecutados, artefatos preservados e limitações.
+O diretório `comparison/` preserva os relatórios e as tabelas históricas da consolidação da validação, mas **não há código dedicado para reconstruir todos os seus arquivos**. Consulte `docs/TESTES_V2.md` e `docs/PROTOCOLO_E_LIMITACOES.md` para distinguir resultados reexecutados, artefatos preservados e limitações.
